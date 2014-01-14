@@ -83,7 +83,8 @@ public class KafkaClientTest extends TestCase {
 		
 		final CuratorFramework cur = mockCurator;
 		final SimpleConsumer con = mockConsumer;
-		client = new KafkaClient("zookeeper", "broker", 9092){
+        final String clientName = "Client_";
+		client = new KafkaClient("zookeeper", "broker", 9092, "client"){
 			void connect(String zk, String broker, int port) 
 			{
 				this.curator = cur;
@@ -113,7 +114,7 @@ public class KafkaClientTest extends TestCase {
 		mylong[1] = 20;
 		mylong[2] = 30;
 		
-		expect(mockConsumer.getOffsetsBefore("topic", 1, -1, 1)).andReturn(mylong);	
+		//expect(mockConsumer.getOffsetsBefore("topic", 1, -1, 1)).andReturn(mylong);
 		replay(mockConsumer, mockCurator);		
 		long answer = client.getNewestOffset("topic", 1);
 		assertEquals(mylong[0], answer);
@@ -127,7 +128,7 @@ public class KafkaClientTest extends TestCase {
 		mylong[1] = 20;
 		mylong[2] = 30;
 		
-		expect(mockConsumer.getOffsetsBefore("topic", 1, -2, 1)).andReturn(mylong);	
+		//expect(mockConsumer.getOffsetsBefore("topic", 1, -2, 1)).andReturn(mylong);
 		replay(mockConsumer, mockCurator);		
 		long answer = client.getOldestOffset("topic", 1);
 		assertEquals(mylong[0], answer);
@@ -166,7 +167,7 @@ public class KafkaClientTest extends TestCase {
 	{
 		final Args args = new Args();
 		replay(mockConsumer, mockCurator);
-		client = new KafkaClient("zookeeper", "broker", 9092){
+		client = new KafkaClient("zookeeper", "broker", 9092, "client"){
 			void connect(String zk, String broker, int port) 
 			{
 				this.curator = mockCurator;
@@ -189,7 +190,7 @@ public class KafkaClientTest extends TestCase {
 	{
 		final Args args = new Args();
 		replay(mockConsumer, mockCurator);
-		client = new KafkaClient("zookeeper", "broker", 9092){
+		client = new KafkaClient("zookeeper", "broker", 9092, "client"){
 			void connect(String zk, String broker, int port) 
 			{
 				this.curator = mockCurator;
@@ -219,7 +220,7 @@ public class KafkaClientTest extends TestCase {
 	
 	public void testFetch()
 	{
-		expect(mockConsumer.fetch(anyObject(FetchRequest.class))).andReturn(new ByteBufferMessageSet(Collections.EMPTY_LIST));	
+		//expect(mockConsumer.fetch(anyObject(FetchRequest.class))).andReturn(new ByteBufferMessageSet(Collections.EMPTY_LIST));
 		replay(mockConsumer, mockCurator);		
 		client.fetch("my_topic", 0, 1717, 1024);
 		verify(mockConsumer, mockCurator);

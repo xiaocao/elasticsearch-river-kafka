@@ -160,7 +160,8 @@ public class KafkaRiver extends AbstractRiverComponent implements River {
 		
 		void initKakfa()
 		{
-			this.kafka = new KafkaClient(riverConfig.zookeeper, riverConfig.brokerHost, riverConfig.brokerPort);
+            String clientName = "Client_" + riverConfig.topic + "_" + riverConfig.partition;
+			this.kafka = new KafkaClient(riverConfig.zookeeper, riverConfig.brokerHost, riverConfig.brokerPort, clientName);
 			this.offset = kafka.getOffset(riverConfig.topic, riverConfig.partition);
 		}
 		

@@ -17,6 +17,7 @@
 	</licenses>
 	<properties>
 		<elasticsearch.version>0.90.0</elasticsearch.version>
+        <kafka.version>0.8.0</kafka.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -34,7 +35,7 @@
 		<dependency>
 			<groupId>org.apache.kafka</groupId>
 			<artifactId>kafka</artifactId>
-			<version>0.7.2</version>
+			<version>${kafka.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.netflix.curator</groupId>
