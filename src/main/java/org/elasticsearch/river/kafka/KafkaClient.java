@@ -20,6 +20,7 @@ import kafka.api.FetchRequest;
 import kafka.api.FetchRequestBuilder;
 import kafka.javaapi.*;
 import kafka.api.PartitionOffsetRequestInfo;
+import kafka.common.ErrorMapping;
 import kafka.common.TopicAndPartition;
 import kafka.javaapi.consumer.SimpleConsumer;
 import kafka.javaapi.message.ByteBufferMessageSet;
@@ -110,7 +111,7 @@ public class KafkaClient {
 	public long getOldestOffset(String topic, int partition) {
         TopicAndPartition topicAndPartition = new TopicAndPartition(topic, partition);
         Map<TopicAndPartition, PartitionOffsetRequestInfo> requestInfo = new HashMap<TopicAndPartition, PartitionOffsetRequestInfo>();
-        requestInfo.put(topicAndPartition, new PartitionOffsetRequestInfo(kafka.api.OffsetRequest.LatestTime(), 1));
+        requestInfo.put(topicAndPartition, new PartitionOffsetRequestInfo(kafka.api.OffsetRequest.EarliestTime(), 1));
         OffsetRequest request = new OffsetRequest(
                 requestInfo, kafka.api.OffsetRequest.CurrentVersion(), clientName);
         OffsetResponse response = consumer.getOffsetsBefore(request);
@@ -124,8 +125,11 @@ public class KafkaClient {
                 .addFetch(topic, partition, offset, maxSizeBytes)
                 .build();
         FetchResponse fetchResponse = consumer.fetch(req);
+        if (fetchResponse.hasError()) {
+          short code = fetchResponse.errorCode(topic, partition);
+          ErrorMapping.maybeThrowException(code);
+        }
         return fetchResponse.messageSet(topic, partition);
-		//return consumer.fetch(new FetchRequest(topic, partition, offset, maxSizeBytes));
 	}
 	
 	public void close() {

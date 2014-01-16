@@ -174,6 +174,7 @@ public class KafkaRiver extends AbstractRiverComponent implements River {
 				++stats.numMessages;
 				try {
 					msgHandler.handle(bulkRequestBuilder, mo.message());
+					offset = mo.nextOffset();
 				} catch (Exception e) {
 					logger.warn("Failed handling message", e);
 				}
@@ -207,7 +208,6 @@ public class KafkaRiver extends AbstractRiverComponent implements River {
 			BulkRequestBuilder bulkRequestBuilder = client.prepareBulk();
 			handleMessages(bulkRequestBuilder, msgs);
 			executeBuilder(bulkRequestBuilder);
-			offset += msgs.validBytes();
 			kafka.saveOffset(riverConfig.topic, riverConfig.partition, offset);
 		}
 		
@@ -292,15 +292,28 @@ public class KafkaRiver extends AbstractRiverComponent implements River {
 						//      OR
 						//  2) This river has gotten far enough behind that Kafka has aged off enough data that the offset is no longer valid.
 						//     If this is the case, this will likely happen everytime Kafka ages off old data unless the data flow decreases in volume.
-						
-						logger.warn("Encountered OffsetOutOfRangeException, querying Kafka for oldest Offset and reseting local offset");
-						offset = kafka.getOldestOffset(riverConfig.topic, riverConfig.partition);
-						logger.warn("Setting offset to oldest offset = {}", offset);
+						if (riverConfig.startFromNewestOffset) {
+							logger.warn("Encountered OffsetOutOfRangeException, querying Kafka for newest Offset and reseting local offset");
+							offset = kafka.getNewestOffset(riverConfig.topic, riverConfig.partition);
+							logger.warn("Setting offset to oldest offset = {}", offset);
+						}
+						else {
+							logger.warn("Encountered OffsetOutOfRangeException, querying Kafka for oldest Offset and reseting local offset");
+							offset = kafka.getOldestOffset(riverConfig.topic, riverConfig.partition);
+							logger.warn("Setting offset to oldest offset = {}", offset);
+						}
 					}
 					catch (InvalidMessageSizeException e) {
-						logger.warn("InvalidMessageSizeException occurred for Kafka({}:{}/{}:{}), querying Kafka for oldest Offset and reseting local offset", e, riverConfig.brokerHost, riverConfig.brokerPort, riverConfig.topic, riverConfig.partition);
-						offset = kafka.getOldestOffset(riverConfig.topic, riverConfig.partition);
-						logger.warn("Setting offset to oldest offset = {}", offset);
+						if (riverConfig.startFromNewestOffset) {
+							logger.warn("InvalidMessageSizeException occurred for Kafka({}:{}/{}:{}), querying Kafka for newest Offset and reseting local offset", e, riverConfig.brokerHost, riverConfig.brokerPort, riverConfig.topic, riverConfig.partition);
+							offset = kafka.getNewestOffset(riverConfig.topic, riverConfig.partition);
+							logger.warn("Setting offset to oldest offset = {}", offset);
+						}
+						else {
+							logger.warn("InvalidMessageSizeException occurred for Kafka({}:{}/{}:{}), querying Kafka for oldest Offset and reseting local offset", e, riverConfig.brokerHost, riverConfig.brokerPort, riverConfig.topic, riverConfig.partition);
+							offset = kafka.getOldestOffset(riverConfig.topic, riverConfig.partition);
+							logger.warn("Setting offset to oldest offset = {}", offset);
+						}
 						try {
 							Thread.sleep(5000);
 						} catch (InterruptedException e2) {

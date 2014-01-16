@@ -37,6 +37,7 @@ public class KafkaRiverConfig {
 	
 	public final int bulkSize;
 	public final TimeValue bulkTimeout;
+    public final boolean startFromNewestOffset;
     
     public KafkaRiverConfig(RiverSettings settings)
     {
@@ -49,6 +50,7 @@ public class KafkaRiverConfig {
             brokerHost = XContentMapValues.nodeStringValue(kafkaSettings.get("broker_host"), "localhost");
             brokerPort = XContentMapValues.nodeIntegerValue(kafkaSettings.get("broker_port"), 9092);
             partition = XContentMapValues.nodeIntegerValue(kafkaSettings.get("partition"), 0);
+            startFromNewestOffset = XContentMapValues.nodeBooleanValue(kafkaSettings.get("startFromNewestOffset"), false);
         }
     	else
     	{
@@ -58,6 +60,7 @@ public class KafkaRiverConfig {
     		topic = "default_topic";
     		partition = 0;
     		factoryClass = "org.elasticsearch.river.kafka.JsonMessageHandlerFactory";
+            startFromNewestOffset = false;
     	}
         
         if (settings.settings().containsKey("index")) {

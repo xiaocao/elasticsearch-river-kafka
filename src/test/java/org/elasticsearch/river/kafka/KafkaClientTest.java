@@ -85,7 +85,7 @@ public class KafkaClientTest extends TestCase {
 		final SimpleConsumer con = mockConsumer;
         final String clientName = "Client_";
 		client = new KafkaClient("zookeeper", "broker", 9092, "client"){
-			void connect(String zk, String broker, int port) 
+			void connect(String zk, String broker, int port, String clientName) 
 			{
 				this.curator = cur;
 				this.consumer = con;
@@ -168,7 +168,7 @@ public class KafkaClientTest extends TestCase {
 		final Args args = new Args();
 		replay(mockConsumer, mockCurator);
 		client = new KafkaClient("zookeeper", "broker", 9092, "client"){
-			void connect(String zk, String broker, int port) 
+			void connect(String zk, String broker, int port, String clientName) 
 			{
 				this.curator = mockCurator;
 				this.consumer = mockConsumer;
@@ -191,7 +191,7 @@ public class KafkaClientTest extends TestCase {
 		final Args args = new Args();
 		replay(mockConsumer, mockCurator);
 		client = new KafkaClient("zookeeper", "broker", 9092, "client"){
-			void connect(String zk, String broker, int port) 
+			void connect(String zk, String broker, int port, String clientName) 
 			{
 				this.curator = mockCurator;
 				this.consumer = mockConsumer;
