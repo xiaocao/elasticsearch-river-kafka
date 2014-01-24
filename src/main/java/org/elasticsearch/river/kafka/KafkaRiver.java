@@ -266,9 +266,10 @@ public class KafkaRiver extends AbstractRiverComponent implements River {
 					if(closed)
 						break;
 					
-					dumpStats();
-					
 					try {
+
+						dumpStats();
+
 						ByteBufferMessageSet msgs = kafka.fetch(riverConfig.topic, riverConfig.partition, offset, riverConfig.bulkSize);
 						if(msgs.validBytes() > 0)
 						{
