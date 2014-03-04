@@ -83,7 +83,9 @@ public class KafkaRiver extends AbstractRiverComponent implements River {
 			}
 			logger.info("closing kafka river");
 			closed = true;
-			thread.interrupt();
+			if (thread != null) {
+				thread.interrupt();
+			}
 		} catch (Exception e) {
 			logger.error("Unexpected Error occurred", e);
 			throw new RuntimeException(e);
