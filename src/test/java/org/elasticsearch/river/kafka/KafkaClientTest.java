@@ -28,6 +28,9 @@ import java.util.Collections;
 
 import junit.framework.TestCase;
 import kafka.api.FetchRequest;
+import kafka.javaapi.FetchResponse;
+import kafka.javaapi.OffsetRequest;
+import kafka.javaapi.OffsetResponse;
 import kafka.javaapi.consumer.SimpleConsumer;
 import kafka.javaapi.message.ByteBufferMessageSet;
 
@@ -113,12 +116,15 @@ public class KafkaClientTest extends TestCase {
 		mylong[0] = 10;
 		mylong[1] = 20;
 		mylong[2] = 30;
-		
-		//expect(mockConsumer.getOffsetsBefore("topic", 1, -1, 1)).andReturn(mylong);
-		replay(mockConsumer, mockCurator);		
+
+    OffsetResponse mockResponse = createMock(OffsetResponse.class);
+    expect(mockResponse.offsets("topic", 1)).andReturn(mylong);
+
+		expect(mockConsumer.getOffsetsBefore(anyObject(OffsetRequest.class))).andReturn(mockResponse);
+		replay(mockConsumer, mockCurator, mockResponse);
 		long answer = client.getNewestOffset("topic", 1);
 		assertEquals(mylong[0], answer);
-		verify(mockConsumer, mockCurator);
+		verify(mockConsumer, mockCurator, mockResponse);
 	}
 
 	public void testGetOldestOffset() throws Exception
@@ -127,12 +133,15 @@ public class KafkaClientTest extends TestCase {
 		mylong[0] = 10;
 		mylong[1] = 20;
 		mylong[2] = 30;
-		
-		//expect(mockConsumer.getOffsetsBefore("topic", 1, -2, 1)).andReturn(mylong);
-		replay(mockConsumer, mockCurator);		
+
+    OffsetResponse mockResponse = createMock(OffsetResponse.class);
+    expect(mockResponse.offsets("topic", 1)).andReturn(mylong);
+
+    expect(mockConsumer.getOffsetsBefore(anyObject(OffsetRequest.class))).andReturn(mockResponse);
+		replay(mockConsumer, mockCurator, mockResponse);
 		long answer = client.getOldestOffset("topic", 1);
 		assertEquals(mylong[0], answer);
-		verify(mockConsumer, mockCurator);
+		verify(mockConsumer, mockCurator, mockResponse);
 	}
 	
 	public void testGet() throws Exception
@@ -220,10 +229,14 @@ public class KafkaClientTest extends TestCase {
 	
 	public void testFetch()
 	{
-		//expect(mockConsumer.fetch(anyObject(FetchRequest.class))).andReturn(new ByteBufferMessageSet(Collections.EMPTY_LIST));
-		replay(mockConsumer, mockCurator);		
+    FetchResponse mockResponse = createMock(FetchResponse.class);
+    expect(mockResponse.hasError()).andReturn(false);
+    expect(mockResponse.messageSet("my_topic", 0)).andReturn(new ByteBufferMessageSet(Collections.EMPTY_LIST));
+
+		expect(mockConsumer.fetch(anyObject(FetchRequest.class))).andReturn(mockResponse);
+		replay(mockConsumer, mockCurator, mockResponse);
 		client.fetch("my_topic", 0, 1717, 1024);
-		verify(mockConsumer, mockCurator);
+		verify(mockConsumer, mockCurator, mockResponse);
 	}
 	
 }
