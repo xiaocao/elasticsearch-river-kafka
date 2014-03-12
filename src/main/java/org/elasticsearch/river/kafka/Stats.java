@@ -1,7 +1,7 @@
 /* Copyright 2013 Endgame, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.  
+ * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
  *    http://www.apache.org/licenses/LICENSE-2.0
@@ -17,23 +17,23 @@
 package org.elasticsearch.river.kafka;
 
 public class Stats {
-	public int numMessages;
-	public int flushes;
-	public int succeeded;
-	public int failed;
-	public double rate;
-	long backlog;
-	
-	public Stats(){
-		reset();
-	}
-	
-	void reset() {
-		numMessages = 0;
-		flushes = 0;
-		succeeded = 0;
-		failed = 0;
-		rate = 0;
-		backlog = 0;
-	}
+  public int numMessages;
+  public int flushes;
+  public int succeeded;
+  public int failed;
+  public double rate;
+  long backlog;
+
+  public Stats(){
+    reset();
+  }
+
+  void reset() {
+    numMessages = 0;
+    flushes = 0;
+    succeeded = 0;
+    failed = 0;
+    rate = 0;
+    backlog = 0;
+  }
 }

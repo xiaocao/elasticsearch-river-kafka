@@ -1,7 +1,7 @@
 /* Copyright 2013 Endgame, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.  
+ * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
  *    http://www.apache.org/licenses/LICENSE-2.0
@@ -19,7 +19,7 @@ package org.elasticsearch.river.kafka;
 import org.elasticsearch.client.Client;
 
 public class JsonMessageHandlerFactory implements MessageHandlerFactory {
-	public MessageHandler createMessageHandler(Client client) throws Exception {
-		return new JsonMessageHandler(client);
-	}
+  public MessageHandler createMessageHandler(Client client) throws Exception {
+    return new JsonMessageHandler(client);
+  }
 }

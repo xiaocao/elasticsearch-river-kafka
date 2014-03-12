@@ -1,7 +1,7 @@
 /* Copyright 2013 Endgame, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.  
+ * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
  *    http://www.apache.org/licenses/LICENSE-2.0
@@ -32,20 +32,20 @@ import kafka.message.Message;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 
 public class RawMessageHandlerTest extends TestCase {
-	public void testIt() throws Exception
-	{
-		byte[] data = "somedata".getBytes();
-		List<String> l = new ArrayList<>();
-		
-		MessageHandler m = new RawMessageHandler();
-		Message message = createMock(Message.class);
-		expect(message.payload()).andReturn(ByteBuffer.wrap(data));
-		
-		BulkRequestBuilder bulkRequestBuilder = createMock(BulkRequestBuilder.class);
-		expect(bulkRequestBuilder.add(aryEq(data), eq(0), eq(data.length), eq(false))).andReturn(null);
-		replay(message, bulkRequestBuilder);
-		
-		m.handle(bulkRequestBuilder, message);
-		verify(bulkRequestBuilder, message);
-	}
+  public void testIt() throws Exception
+  {
+    byte[] data = "somedata".getBytes();
+    List<String> l = new ArrayList<>();
+
+    MessageHandler m = new RawMessageHandler();
+    Message message = createMock(Message.class);
+    expect(message.payload()).andReturn(ByteBuffer.wrap(data));
+
+    BulkRequestBuilder bulkRequestBuilder = createMock(BulkRequestBuilder.class);
+    expect(bulkRequestBuilder.add(aryEq(data), eq(0), eq(data.length), eq(false))).andReturn(null);
+    replay(message, bulkRequestBuilder);
+
+    m.handle(bulkRequestBuilder, message);
+    verify(bulkRequestBuilder, message);
+  }
 }

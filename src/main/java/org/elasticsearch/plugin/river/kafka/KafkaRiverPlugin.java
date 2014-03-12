@@ -1,7 +1,7 @@
 /* Copyright 2013 Endgame, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.  
+ * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
  *    http://www.apache.org/licenses/LICENSE-2.0
@@ -25,21 +25,21 @@ import org.elasticsearch.river.kafka.KafkaRiverModule;
  */
 public class KafkaRiverPlugin extends AbstractPlugin {
 
-    @Inject
-    public KafkaRiverPlugin() {
-    }
+  @Inject
+  public KafkaRiverPlugin() {
+  }
 
-    @Override
-    public String name() {
-        return "river-kafka";
-    }
+  @Override
+  public String name() {
+    return "river-kafka";
+  }
 
-    @Override
-    public String description() {
-        return "River Kafka Plugin";
-    }
+  @Override
+  public String description() {
+    return "River Kafka Plugin";
+  }
 
-    public void onModule(RiversModule module) {
-        module.registerRiver("kafka", KafkaRiverModule.class);
-    }
+  public void onModule(RiversModule module) {
+    module.registerRiver("kafka", KafkaRiverModule.class);
+  }
 }
