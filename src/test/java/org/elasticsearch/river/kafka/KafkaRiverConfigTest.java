@@ -51,8 +51,9 @@ public class KafkaRiverConfigTest extends TestCase {
     RiverSettings settings = new RiverSettings(
       ImmutableSettings.settingsBuilder().build(),
       map);
-    KafkaRiverConfig c = new KafkaRiverConfig(settings);
+    KafkaRiverConfig c = new KafkaRiverConfig("testRiver", settings);
 
+    assertEquals("testRiver", c.riverName);
     assertEquals("broker-host", c.brokerHost);
     assertEquals(9999, c.brokerPort);
     assertEquals("zoo-host", c.zookeeper);
@@ -74,8 +75,9 @@ public class KafkaRiverConfigTest extends TestCase {
     RiverSettings settings = new RiverSettings(
       ImmutableSettings.settingsBuilder().build(),
       map);
-    KafkaRiverConfig c = new KafkaRiverConfig(settings);
+    KafkaRiverConfig c = new KafkaRiverConfig("testRiver", settings);
 
+    assertEquals("testRiver", c.riverName);
     assertEquals("localhost", c.brokerHost);
     assertEquals(9092, c.brokerPort);
     assertEquals("localhost", c.zookeeper);

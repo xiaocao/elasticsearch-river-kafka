@@ -24,6 +24,7 @@ import org.elasticsearch.river.RiverSettings;
 
 public class KafkaRiverConfig {
 
+  public final String riverName;
   public final String zookeeper;
   public final String factoryClass; // full class path and name for the concrete message handler class factory
   public final String brokerHost;
@@ -39,8 +40,9 @@ public class KafkaRiverConfig {
   public final TimeValue bulkTimeout;
   public final boolean startFromNewestOffset;
 
-  public KafkaRiverConfig(RiverSettings settings)
+  public KafkaRiverConfig(String riverName, RiverSettings settings)
   {
+    this.riverName = riverName;
     if (settings.settings().containsKey("kafka")) {
       Map<String, Object> kafkaSettings = (Map<String, Object>) settings.settings().get("kafka");
 

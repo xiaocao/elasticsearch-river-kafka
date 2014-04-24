@@ -189,9 +189,9 @@ public class KafkaClientTest extends TestCase {
         args.data = data;
       }
     };
-    client.saveOffset("my_topic", 77, 4242);
+    client.saveOffset("testRiver", "my_topic", 77, 4242);
 
-    assertEquals("/es-river-kafka/offsets/broker:9092/my_topic/77", args.path);
+    assertEquals("/es-river-kafka/testRiver/offsets/broker:9092/my_topic/77", args.path);
     assertEquals("4242", args.data);
   }
 
@@ -213,8 +213,8 @@ public class KafkaClientTest extends TestCase {
       }
     };
 
-    assertEquals(100, client.getOffset("my_topic", 777));
-    assertEquals("/es-river-kafka/offsets/broker:9092/my_topic/777", args.path);
+    assertEquals(100, client.getOffset("testRiver", "my_topic", 777));
+    assertEquals("/es-river-kafka/testRiver/offsets/broker:9092/my_topic/777", args.path);
   }
 
   public void testClose()

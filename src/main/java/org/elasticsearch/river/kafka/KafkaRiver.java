@@ -51,7 +51,7 @@ public class KafkaRiver extends AbstractRiverComponent implements River {
 
     try {
       logger.info("KafkaRiver created: name={}, type={}", riverName.getName(), riverName.getType());
-      this.riverConfig = new KafkaRiverConfig(settings);
+      this.riverConfig = new KafkaRiverConfig(riverName.getName(), settings);
     } catch (Exception e) {
       logger.error("Unexpected Error occurred", e);
       throw new RuntimeException(e);
@@ -164,7 +164,7 @@ public class KafkaRiver extends AbstractRiverComponent implements River {
     {
       String clientName = "Client_" + riverConfig.topic + "_" + riverConfig.partition;
       this.kafka = new KafkaClient(riverConfig.zookeeper, riverConfig.brokerHost, riverConfig.brokerPort, clientName);
-      this.offset = kafka.getOffset(riverConfig.topic, riverConfig.partition);
+      this.offset = kafka.getOffset(riverConfig.riverName, riverConfig.topic, riverConfig.partition);
     }
 
     void handleMessages(BulkRequestBuilder bulkRequestBuilder, ByteBufferMessageSet msgs)
@@ -210,7 +210,7 @@ public class KafkaRiver extends AbstractRiverComponent implements River {
       BulkRequestBuilder bulkRequestBuilder = client.prepareBulk();
       handleMessages(bulkRequestBuilder, msgs);
       executeBuilder(bulkRequestBuilder);
-      kafka.saveOffset(riverConfig.topic, riverConfig.partition, offset);
+      kafka.saveOffset(riverConfig.riverName, riverConfig.topic, riverConfig.partition, offset);
     }
 
     void reconnectToKafka() throws InterruptedException

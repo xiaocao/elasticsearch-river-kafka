@@ -86,13 +86,14 @@ public class KafkaClient {
     }
   }
 
-  public void saveOffset(String topic, int partition, long offset)
+  public void saveOffset(String riverName, String topic, int partition, long offset)
   {
-    save(String.format("/es-river-kafka/offsets/%s/%s/%d", brokerURL, topic, partition), Long.toString(offset));
+    save(String.format("/es-river-kafka/%s/offsets/%s/%s/%d", riverName, brokerURL, topic, partition), Long.toString(offset));
+    //save(String.format("/es-river-kafka/offsets/%s/%s/%d", brokerURL, topic, partition), Long.toString(offset));
   }
 
-  public long getOffset(String topic, int partition) {
-    String data = get(String.format("/es-river-kafka/offsets/%s/%s/%d", brokerURL, topic, partition));
+  public long getOffset(String riverName, String topic, int partition) {
+    String data = get(String.format("/es-river-kafka/%s/offsets/%s/%s/%d", riverName, brokerURL, topic, partition));
     if(data == null)
       return 0;
     return Long.parseLong(data);

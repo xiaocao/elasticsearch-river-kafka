@@ -32,7 +32,7 @@ public class StatsReporterTest extends TestCase {
     Map<String, Object> config = new HashMap<>();
     config.put("statsd", ImmutableMap.<String, Object> builder().put("host", "localhost").put("port", "1234").put("prefix", "my_prefix").build());
 
-    StatsReporter r = new StatsReporter(new KafkaRiverConfig(new RiverSettings(globalSettings, config)));
+    StatsReporter r = new StatsReporter(new KafkaRiverConfig("testRiver", new RiverSettings(globalSettings, config)));
     Stats s = new Stats();
 
     // cant mock statsdclient - due to it being final (Easymock creates a
@@ -66,7 +66,7 @@ public class StatsReporterTest extends TestCase {
     Map<String, Object> config = new HashMap<>();
     config.put("statsd", ImmutableMap.<String, Object> builder().put("host", "localhost").put("port", "1234").put("prefix", "my_prefix").build());
 
-    StatsReporter r = new StatsReporter(new KafkaRiverConfig(new RiverSettings(globalSettings, config)));
+    StatsReporter r = new StatsReporter(new KafkaRiverConfig("testRiver", new RiverSettings(globalSettings, config)));
     assertTrue(r.isEnabled());
 
   }
@@ -75,10 +75,10 @@ public class StatsReporterTest extends TestCase {
     Settings globalSettings = ImmutableSettings.settingsBuilder().put("cluster.name", "jason-hfs-cluster").build();
     Map<String, Object> config = new HashMap<>();
     // no statsd config at all
-    assertFalse(new StatsReporter(new KafkaRiverConfig(new RiverSettings(globalSettings, config))).isEnabled());
+    assertFalse(new StatsReporter(new KafkaRiverConfig("testRiver", new RiverSettings(globalSettings, config))).isEnabled());
 
     // missing host
     config.put("statsd", ImmutableMap.<String, Object> builder().put("port", "1234").put("prefix", "my_prefix").build());
-    assertFalse(new StatsReporter(new KafkaRiverConfig(new RiverSettings(globalSettings, config))).isEnabled());
+    assertFalse(new StatsReporter(new KafkaRiverConfig("testRiver", new RiverSettings(globalSettings, config))).isEnabled());
   }
 }
