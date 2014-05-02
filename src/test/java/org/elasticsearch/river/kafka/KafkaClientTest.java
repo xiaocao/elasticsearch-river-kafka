@@ -87,8 +87,8 @@ public class KafkaClientTest extends TestCase {
     final CuratorFramework cur = mockCurator;
     final SimpleConsumer con = mockConsumer;
         final String clientName = "Client_";
-    client = new KafkaClient("zookeeper", "broker", 9092, "client"){
-      void connect(String zk, String broker, int port, String clientName)
+    client = new KafkaClient("zookeeper", "topic", 1){
+      void connect(String zk, String topic, int partition)
       {
         this.curator = cur;
         this.consumer = con;
@@ -106,8 +106,8 @@ public class KafkaClientTest extends TestCase {
 
   public void testConstructor()
   {
-    replay(mockConsumer, mockCurator);
-    assertEquals(client.brokerURL, "broker:9092");
+   replay(mockConsumer, mockCurator);
+   assertEquals(client.clientName, "Client_topic_1");
   }
 
   public void testGetNewestOffset() throws Exception
@@ -176,8 +176,8 @@ public class KafkaClientTest extends TestCase {
   {
     final Args args = new Args();
     replay(mockConsumer, mockCurator);
-    client = new KafkaClient("zookeeper", "broker", 9092, "client"){
-      void connect(String zk, String broker, int port, String clientName)
+    client = new KafkaClient("zookeeper", "topic", 1){
+      void connect(String zk, String topic, int partition)
       {
         this.curator = mockCurator;
         this.consumer = mockConsumer;
@@ -191,7 +191,7 @@ public class KafkaClientTest extends TestCase {
     };
     client.saveOffset("testRiver", "my_topic", 77, 4242);
 
-    assertEquals("/es-river-kafka/testRiver/offsets/broker:9092/my_topic/77", args.path);
+    assertEquals("/es-river-kafka/testRiver/offsets/my_topic/77", args.path);
     assertEquals("4242", args.data);
   }
 
@@ -199,8 +199,8 @@ public class KafkaClientTest extends TestCase {
   {
     final Args args = new Args();
     replay(mockConsumer, mockCurator);
-    client = new KafkaClient("zookeeper", "broker", 9092, "client"){
-      void connect(String zk, String broker, int port, String clientName)
+    client = new KafkaClient("zookeeper", "topci", 1){
+      void connect(String zk, String topic, int partition)
       {
         this.curator = mockCurator;
         this.consumer = mockConsumer;
@@ -213,8 +213,8 @@ public class KafkaClientTest extends TestCase {
       }
     };
 
-    assertEquals(100, client.getOffset("testRiver", "my_topic", 777));
-    assertEquals("/es-river-kafka/testRiver/offsets/broker:9092/my_topic/777", args.path);
+    assertEquals(100, client.getOffset("testRiver", "my_topic", 777, false));
+    assertEquals("/es-river-kafka/testRiver/offsets/my_topic/777", args.path);
   }
 
   public void testClose()

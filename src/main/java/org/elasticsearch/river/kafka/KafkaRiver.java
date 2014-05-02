@@ -61,7 +61,7 @@ public class KafkaRiver extends AbstractRiverComponent implements River {
   @Override
   public void start() {
     try {
-      logger.info("creating kafka river: zookeeper = {}, broker = {}, broker_port = {}, message_handler_factory_class = {}", riverConfig.zookeeper, riverConfig.brokerHost, riverConfig.brokerPort, riverConfig.factoryClass);
+      logger.info("creating kafka river: zookeeper = {}, name = {}, message_handler_factory_class = {}", riverConfig.zookeeper, riverConfig.riverName, riverConfig.factoryClass);
       logger.info("part = {}, topic = {}", riverConfig.partition, riverConfig.topic);
       logger.info("bulkSize = {}, bulkTimeout = {}", riverConfig.bulkSize, riverConfig.bulkTimeout);
 
@@ -131,12 +131,12 @@ public class KafkaRiver extends AbstractRiverComponent implements River {
     private long statsLastPrintTime;
     private Stats stats = new Stats();
 
-    public KafkaRiverWorker(MessageHandler msgHandler, KafkaRiverConfig riverConfig, Client client)
+    public KafkaRiverWorker(MessageHandler msgHandler, KafkaRiverConfig riverConfig, Client client) throws Exception
     {
       this.msgHandler = msgHandler;
       this.client = client;
       this.riverConfig = riverConfig;
-      initKakfa();
+      reconnectToKafka();
       resetStats();
       initStatsd(riverConfig);
     }
@@ -162,9 +162,8 @@ public class KafkaRiver extends AbstractRiverComponent implements River {
 
     void initKakfa()
     {
-      String clientName = "Client_" + riverConfig.topic + "_" + riverConfig.partition;
-      this.kafka = new KafkaClient(riverConfig.zookeeper, riverConfig.brokerHost, riverConfig.brokerPort, clientName);
-      this.offset = kafka.getOffset(riverConfig.riverName, riverConfig.topic, riverConfig.partition);
+      this.kafka = new KafkaClient(riverConfig.zookeeper, riverConfig.topic, riverConfig.partition);
+      this.offset = kafka.getOffset(riverConfig.riverName, riverConfig.topic, riverConfig.partition, riverConfig.startFromNewestOffset);
     }
 
     void handleMessages(BulkRequestBuilder bulkRequestBuilder, ByteBufferMessageSet msgs)
@@ -222,14 +221,16 @@ public class KafkaRiver extends AbstractRiverComponent implements River {
 
         try {
           try {
-            kafka.close();
+            if (kafka != null) {
+              kafka.close();
+            }
           } catch (Exception e) {}
 
           initKakfa();
           break;
         }
         catch(Exception e2){
-          logger.error("Error re-connecting to Kafka({}:{}/{}), retrying in 5 sec", e2, riverConfig.brokerHost, riverConfig.topic, riverConfig.partition);
+          logger.error("Error re-connecting to Kafka({}/{}), retrying in 5 sec", e2, riverConfig.topic, riverConfig.partition);
           Thread.sleep(5000);
         }
       }
@@ -248,7 +249,7 @@ public class KafkaRiver extends AbstractRiverComponent implements River {
         stats.backlog = getBacklogSize();
         stats.rate = (double)stats.numMessages/((double)elapsed/1000.0);
         logger.info("{}:{}/{}:{} {} msg ({} msg/s), flushed {} ({} err, {} succ) [msg backlog {}]",
-            riverConfig.brokerHost, riverConfig.brokerPort, riverConfig.topic, riverConfig.partition,
+            kafka.brokerHost, kafka.brokerPort, riverConfig.topic, riverConfig.partition,
             stats.numMessages, String.format("%.2f", stats.rate), stats.flushes,
             stats.failed, stats.succeeded,
             getBytesString(stats.backlog));
@@ -309,12 +310,12 @@ public class KafkaRiver extends AbstractRiverComponent implements River {
           }
           catch (InvalidMessageSizeException e) {
             if (riverConfig.startFromNewestOffset) {
-              logger.warn("InvalidMessageSizeException occurred for Kafka({}:{}/{}:{}), querying Kafka for newest Offset and reseting local offset", e, riverConfig.brokerHost, riverConfig.brokerPort, riverConfig.topic, riverConfig.partition);
+              logger.warn("InvalidMessageSizeException occurred for Kafka({}:{}/{}:{}), querying Kafka for newest Offset and reseting local offset", e, kafka.brokerHost, kafka.brokerPort, riverConfig.topic, riverConfig.partition);
               offset = kafka.getNewestOffset(riverConfig.topic, riverConfig.partition);
               logger.warn("Setting offset to oldest offset = {}", offset);
             }
             else {
-              logger.warn("InvalidMessageSizeException occurred for Kafka({}:{}/{}:{}), querying Kafka for oldest Offset and reseting local offset", e, riverConfig.brokerHost, riverConfig.brokerPort, riverConfig.topic, riverConfig.partition);
+              logger.warn("InvalidMessageSizeException occurred for Kafka({}:{}/{}:{}), querying Kafka for oldest Offset and reseting local offset", e, kafka.brokerHost, kafka.brokerPort, riverConfig.topic, riverConfig.partition);
               offset = kafka.getOldestOffset(riverConfig.topic, riverConfig.partition);
               logger.warn("Setting offset to oldest offset = {}", offset);
             }
@@ -325,7 +326,7 @@ public class KafkaRiver extends AbstractRiverComponent implements River {
             }
           }
           catch (Exception e) {
-            logger.error("Error fetching from Kafka({}:{}/{}:{}), retrying in 5 sec", e, riverConfig.brokerHost, riverConfig.brokerPort, riverConfig.topic, riverConfig.partition);
+            logger.error("Error fetching from Kafka({}:{}/{}:{}), retrying in 5 sec", e, kafka.brokerHost, kafka.brokerPort, riverConfig.topic, riverConfig.partition);
             try {
               Thread.sleep(5000);
               reconnectToKafka();

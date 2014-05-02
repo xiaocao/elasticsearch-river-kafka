@@ -54,8 +54,6 @@ public class KafkaRiverConfigTest extends TestCase {
     KafkaRiverConfig c = new KafkaRiverConfig("testRiver", settings);
 
     assertEquals("testRiver", c.riverName);
-    assertEquals("broker-host", c.brokerHost);
-    assertEquals(9999, c.brokerPort);
     assertEquals("zoo-host", c.zookeeper);
     assertEquals("my.factory.class.MyFactory", c.factoryClass);
     assertEquals(1717171, c.bulkSize);
@@ -78,8 +76,6 @@ public class KafkaRiverConfigTest extends TestCase {
     KafkaRiverConfig c = new KafkaRiverConfig("testRiver", settings);
 
     assertEquals("testRiver", c.riverName);
-    assertEquals("localhost", c.brokerHost);
-    assertEquals(9092, c.brokerPort);
     assertEquals("localhost", c.zookeeper);
     assertEquals(10485760, c.bulkSize);
     assertEquals(0, c.partition);

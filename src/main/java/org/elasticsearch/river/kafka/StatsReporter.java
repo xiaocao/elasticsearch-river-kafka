@@ -35,9 +35,7 @@ public class StatsReporter {
     }
 
     statsd = new StatsDClient(riverConfig.statsdPrefix, riverConfig.statsdHost, riverConfig.statsdPort);
-    String baseName = String.format("%s.%d.%s.%d",
-        riverConfig.brokerHost, riverConfig.brokerPort,
-        riverConfig.topic, riverConfig.partition);
+    String baseName = String.format("%s.%s.%d", riverConfig.riverName, riverConfig.topic, riverConfig.partition);
 
     numMsg    = baseName + ".numMsg";
     flushes   = baseName + ".flushes";

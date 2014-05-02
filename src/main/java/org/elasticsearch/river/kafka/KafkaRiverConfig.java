@@ -27,8 +27,6 @@ public class KafkaRiverConfig {
   public final String riverName;
   public final String zookeeper;
   public final String factoryClass; // full class path and name for the concrete message handler class factory
-  public final String brokerHost;
-  public final int brokerPort;
   public final String topic;
   public final int partition;
 
@@ -49,16 +47,12 @@ public class KafkaRiverConfig {
       topic = (String)kafkaSettings.get("topic");
       zookeeper = XContentMapValues.nodeStringValue(kafkaSettings.get("zookeeper"), "localhost");
       factoryClass = XContentMapValues.nodeStringValue(kafkaSettings.get("message_handler_factory_class"), "org.elasticsearch.river.kafka.JsonMessageHandlerFactory");
-      brokerHost = XContentMapValues.nodeStringValue(kafkaSettings.get("broker_host"), "localhost");
-      brokerPort = XContentMapValues.nodeIntegerValue(kafkaSettings.get("broker_port"), 9092);
       partition = XContentMapValues.nodeIntegerValue(kafkaSettings.get("partition"), 0);
       startFromNewestOffset = XContentMapValues.nodeBooleanValue(kafkaSettings.get("startFromNewestOffset"), false);
     }
     else
     {
       zookeeper = "localhost";
-      brokerHost = "localhost";
-      brokerPort = 9092;
       topic = "default_topic";
       partition = 0;
       factoryClass = "org.elasticsearch.river.kafka.JsonMessageHandlerFactory";
