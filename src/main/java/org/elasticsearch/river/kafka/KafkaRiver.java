@@ -110,7 +110,7 @@ public class KafkaRiver extends AbstractRiverComponent implements River {
       throw new RuntimeException(e);
     }
 
-    return (MessageHandler) handlerfactory.createMessageHandler(client);
+    return handlerfactory.createMessageHandler(client);
   }
 
   /**
