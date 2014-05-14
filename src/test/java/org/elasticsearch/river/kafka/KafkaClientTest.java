@@ -34,12 +34,11 @@ import kafka.javaapi.OffsetResponse;
 import kafka.javaapi.consumer.SimpleConsumer;
 import kafka.javaapi.message.ByteBufferMessageSet;
 
+import org.apache.curator.framework.CuratorFramework;
+import org.apache.curator.framework.api.ExistsBuilder;
+import org.apache.curator.framework.api.GetDataBuilder;
+import org.apache.curator.framework.api.SetDataBuilder;
 import org.apache.zookeeper.data.Stat;
-
-import com.netflix.curator.framework.CuratorFramework;
-import com.netflix.curator.framework.api.ExistsBuilder;
-import com.netflix.curator.framework.api.GetDataBuilder;
-import com.netflix.curator.framework.api.SetDataBuilder;
 
 public class KafkaClientTest extends TestCase {
 
