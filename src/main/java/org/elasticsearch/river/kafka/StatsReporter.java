@@ -16,6 +16,7 @@
 
 package org.elasticsearch.river.kafka;
 
+import com.timgroup.statsd.NonBlockingStatsDClient;
 import com.timgroup.statsd.StatsDClient;
 
 public class StatsReporter {
@@ -34,7 +35,7 @@ public class StatsReporter {
       return;
     }
 
-    statsd = new StatsDClient(riverConfig.statsdPrefix, riverConfig.statsdHost, riverConfig.statsdPort);
+    statsd = new NonBlockingStatsDClient(riverConfig.statsdPrefix, riverConfig.statsdHost, riverConfig.statsdPort);
     String baseName = String.format("%s.%s.%d", riverConfig.riverName, riverConfig.topic, riverConfig.partition);
 
     numMsg    = baseName + ".numMsg";
